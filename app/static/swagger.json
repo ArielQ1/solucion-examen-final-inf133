@@ -1,0 +1,610 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Gestion de Usuarios y Restaurantes API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/register": {
+      "post": {
+        "summary": "Registra un nuevo usuario",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Usuario creado"
+          },
+          "400": {
+            "description": "Solicitud incorrecta"
+          }
+        }
+      }
+    },
+    "/api/login": {
+      "post": {
+        "summary": "Inicia sesión con un usuario existente",
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Login"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Inicio de sesión exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string",
+                      "description": "Token de acceso JWT para el usuario"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales inválidas"
+          }
+        }
+      }
+    },
+    "/api/restaurants": {
+      "get": {
+        "summary": "Obtiene la lista de todos los restaurantes",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de restaurantes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Restaurant"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crea un nuevo restaurante",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Restaurant"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Restaurante creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Restaurant"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/restaurants/{id}": {
+      "get": {
+        "summary": "Obtiene un restaurante específico por su ID",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalles del restaurante",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Restaurant"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Restaurante no encontrado"
+          }
+        }
+      },
+      "put": {
+        "summary": "Actualiza un restaurante existente por su ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Restaurant"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Restaurante actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Restaurant"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Restaurante no encontrado"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Elimina un restaurante existente por su ID",
+        "tags": [
+          "Admin"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Restaurante eliminado"
+          },
+          "404": {
+            "description": "Restaurante no encontrado"
+          }
+        }
+      }
+    },
+    "/api/reservations": {
+      "get": {
+        "summary": "Obtiene la lista de reservas del usuario actual",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de reservas del usuario",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Reservation"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Crea una nueva reserva para el usuario actual",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reservation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reserva creada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/reservations/{id}": {
+      "get": {
+        "summary": "Obtiene una reserva específica por su ID para el usuario actual",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detalles de la reserva",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Actualiza una reserva existente por su ID para el usuario actual",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Reservation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reserva actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Reservation"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Elimina una reserva existente por su ID para el usuario actual",
+        "tags": [
+          "Admin",
+          "Customer"
+        ],
+        "security": [
+          {
+            "JWTAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Reserva eliminada"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "JWTAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "admin",
+              "customer"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "email",
+          "password",
+          "phone",
+          "role"
+        ]
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "Restaurant": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          }
+        },
+        "required": [
+          "name",
+          "address",
+          "city",
+          "phone",
+          "description",
+          "rating"
+        ]
+      },
+      "Reservation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "readOnly": true
+          },
+          "user_id": {
+            "type": "integer"
+          },
+          "restaurant_id": {
+            "type": "integer"
+          },
+          "reservation_date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "num_guests": {
+            "type": "integer"
+          },
+          "special_requests": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_id",
+          "restaurant_id",
+          "reservation_date",
+          "num_guests",
+          "status"
+        ]
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Admin",
+      "description": "Operaciones para administradores"
+    },
+    {
+      "name": "Customer",
+      "description": "Operaciones para clientes"
+    },
+    {
+      "name": "User",
+      "description": "Operaciones para autenticacion"
+    }
+  ]
+}
